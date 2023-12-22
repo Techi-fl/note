@@ -6,6 +6,7 @@
     <title>Note</title>
     <link rel="shortcut icon" href="icone.png" type="image/x-icon">
     <style>
+        /* ... seus estilos CSS ... */
         .def {
             padding-left:10px;
             padding-right:10px;
@@ -27,7 +28,7 @@
             bottom: 0;
         }
 
-        #input, #salvar {
+        #input, #salvar, #remover, #inputRemove, #confirmar {
             display: none;
             margin: 0 auto;
         }
@@ -37,89 +38,160 @@
             margin-bottom: 10px;
             border: 1px solid black;
         }
+
+        #remover {
+            float:right ;
+            display: block;  /* Faz o botão aparecer */
+        }
+
+        #input.invalid, #inputRemove.invalid {
+            color: red;
+        }
     </style>
 </head>
 <body>
     <!-- Botão para salvar extraído -->
     <button id="salvarExtraido">Salvar Extraído</button>
+    <!-- Botão para remover div -->
+    <button id="remover">Remover</button>
     <!-- Input para nome da div -->
     <input id="input" type="text" placeholder="Nome do extrato">
+    <!-- Input para remover div -->
+    <input id="inputRemove" type="text" placeholder="Nome do extrato para remover">
     <!-- Botão para salvar -->
     <button id="salvar">Salvar</button>
+    <!-- Botão para confirmar remoção -->
+    <button id="confirmar">Confirmar</button>
     <!-- Link para voltar -->
     <a href="index.html" class="def">Voltar</a>
 
     <script>
-        // Cria uma nova lista para armazenar os itens extraídos
-        var itensExtraidos = [];
+ // Cria uma nova lista para armazenar os itens extraídos
+var itensExtraidos = [];
 
-        // Adiciona o evento de clique ao botão Salvar Extraído
-        document.getElementById('salvarExtraido').addEventListener('click', function() {
-            // Exibe o input e o botão Salvar
-            document.getElementById('input').style.display = 'block';
-            document.getElementById('salvar').style.display = 'block';
-        });
+// Adiciona o evento de clique ao botão Salvar Extraído
+document.getElementById('salvarExtraido').addEventListener('click', function() {
+  // Verifica se o input e o botão Salvar já estão visíveis
+  if (document.getElementById('input').style.display === 'block' && document.getElementById('salvar').style.display === 'block') {
+      // Esconde o input e o botão Salvar
+      document.getElementById('input').style.display = 'none';
+      document.getElementById('salvar').style.display = 'none';
+  } else {
+      // Esconde o input e o botão Confirmar
+      document.getElementById('inputRemove').style.display = 'none';
+      document.getElementById('confirmar').style.display = 'none';
+      // Exibe o input e o botão Salvar
+      document.getElementById('input').style.display = 'block';
+      document.getElementById('salvar').style.display = 'block';
+  }
+});
 
-        // Adiciona o evento de clique ao botão Salvar
-        document.getElementById('salvar').addEventListener('click', function() {
-            // Cria uma nova div com o nome do input
-            var div = document.createElement('div');
-            div.textContent = document.getElementById('input').value;
-            document.body.appendChild(div);
-            // Pega os itens da lista
-            var itens = JSON.parse(localStorage.getItem('itensExtraidos')) || [];
-            // Mostra o cálculo em negrito se estiver definido
-            var somaFinal = localStorage.getItem('somaFinal');
-            if (somaFinal) {
-                var p = document.createElement('p');
-                p.style.fontWeight = 'bold';
-                p.textContent = 'Cálculo: ' + somaFinal;
-                div.appendChild(p);
-            }
-            // Adiciona os itens à div
-if (itens) {  // Verifica se 'itens' existe antes de chamar 'forEach'
-    itens.forEach(function(item) {
-        var p = document.createElement('p');
-        p.textContent = item.texto;
-        div.appendChild(p);
+// Adiciona o evento de clique ao botão Remover
+document.getElementById('remover').addEventListener('click', function() {
+    // Pega a lista de divs
+    var divs = JSON.parse(localStorage.getItem('divs')) || [];
+    // Remove o último item da lista de divs
+    var removedDiv = divs.pop();
+    localStorage.setItem('divs', JSON.stringify(divs));
+    
+    // Remove a última div do DOM
+    if (removedDiv) {
+        var lastDiv = document.body.lastElementChild;
+        if (lastDiv && lastDiv.tagName === 'DIV') {
+            lastDiv.remove();
+        }
+    }
+});
+
+// Cria uma nova lista para armazenar os itens extraídos
+var itensExtraidos = [];
+
+// Cria uma nova lista para armazenar as divs
+var divs = [];
+
+// Adiciona o evento de input ao campo de entrada
+document.getElementById('input').addEventListener('input', function() {
+    // Pega o nome da div do input
+    var nomeDiv = document.getElementById('input').value;
+    // Verifica se o nome da div já existe na lista de divs
+    var divs = JSON.parse(localStorage.getItem('divs')) || [];
+    var index = divs.findIndex(function(divInfo) {
+        return divInfo.nome === nomeDiv;
     });
-}
+    // Se o nome da div já existir ou o input estiver vazio, torna o input vermelho e desabilita o botão Salvar
+    if (index !== -1 || nomeDiv.trim() === '') {
+        document.getElementById('input').classList.add('invalid');
+        document.getElementById('salvar').disabled = true;
+    } else {
+        // Se o nome da div não existir, torna o input normal e habilita o botão Salvar
+        document.getElementById('input').classList.remove('invalid');
+        document.getElementById('salvar').disabled = false;
+    }
+});
 
-            // Esconde o input e o botão Salvar
-            document.getElementById('input').style.display = 'none';
-            document.getElementById('salvar').style.display = 'none';
-            // Limpa o input
-            document.getElementById('input').value = '';
-            // Salva a div
-            var divs = JSON.parse(localStorage.getItem('divs')) || [];
-            divs.push({nome: div.textContent, somaFinal: somaFinal, itens: itens});
-            localStorage.setItem('divs', JSON.stringify(divs));
-        });
-
-        // Carrega as divs salvas ao carregar a página
-        window.onload = function() {
-            var divs = JSON.parse(localStorage.getItem('divs')) || [];
-            divs.forEach(function(divInfo) {
-                var div = document.createElement('div');
-                div.textContent = divInfo.nome;
-                document.body.appendChild(div);
-                if (divInfo.somaFinal) {
-                    var p = document.createElement('p');
-                    p.style.fontWeight = 'bold';
-                    p.textContent = 'Cálculo: ' + divInfo.somaFinal;
-                    div.appendChild(p);
-                }
-                if (divInfo.itens) {  // Verifica se 'itens' existe antes de chamar 'forEach'
-                    divInfo.itens.forEach(function(item) {
-                        var p = document.createElement('p');
-                        p.textContent = item.texto;
-                        div.appendChild(p);
-                    });
-                }
+// Adiciona o evento de clique ao botão Salvar
+document.getElementById('salvar').addEventListener('click', function() {
+    // Pega o nome da div do input
+    var nomeDiv = document.getElementById('input').value;
+    // Verifica se o nome da div já existe na lista de divs
+    var divs = JSON.parse(localStorage.getItem('divs')) || [];
+    var index = divs.findIndex(function(divInfo) {
+        return divInfo.nome === nomeDiv;
+    });
+    // Se o nome da div não existir e o input não estiver vazio, cria uma nova div
+    if (index === -1 && nomeDiv.trim() !== '') {
+        var div = document.createElement('div');
+        div.textContent = nomeDiv;
+        document.body.appendChild(div);
+        // Pega os itens da lista
+        var itens = JSON.parse(localStorage.getItem('itensExtraidos')) || [];
+        // Mostra o cálculo em negrito se estiver definido
+        var somaFinal = localStorage.getItem('somaFinal');
+        if (somaFinal) {
+            var p = document.createElement('p');
+            p.style.fontWeight = 'bold';
+            p.textContent = 'Cálculo: ' + somaFinal;
+            div.appendChild(p);
+        }
+        // Adiciona os itens à div
+        if (itens) {  // Verifica se 'itens' existe antes de chamar 'forEach'
+            itens.forEach(function(item) {
+                var p = document.createElement('p');
+                p.textContent = item.texto;
+                div.appendChild(p);
             });
-        };
+        }
+        // Limpa o input
+        document.getElementById('input').value = '';
+        // Adiciona o nome da div à lista de divs
+        divs.push({nome: nomeDiv, somaFinal: somaFinal, itens: itens});
+        localStorage.setItem('divs', JSON.stringify(divs));
+    }
+});
 
-        
+
+// Carrega as divs salvas ao carregar a página
+window.onload = function() {
+    var divs = JSON.parse(localStorage.getItem('divs')) || [];
+    divs.forEach(function(divInfo) {
+        var div = document.createElement('div');
+        div.textContent = divInfo.nome;
+        document.body.appendChild(div);
+        if (divInfo.somaFinal) {
+            var p = document.createElement('p');
+            p.style.fontWeight = 'bold';
+            p.textContent = 'Cálculo: ' + divInfo.somaFinal;
+            div.appendChild(p);
+        }
+        if (divInfo.itens) {  // Verifica se 'itens' existe antes de chamar 'forEach'
+            divInfo.itens.forEach(function(item) {
+                var p = document.createElement('p');
+                p.textContent = item.texto;
+                div.appendChild(p);
+            });
+        }
+    });
+};
     </script>
 </body>
 </html>
