@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Note</title>
+    <link rel="shortcut icon" href="icone.png" type="image/x-icon">
+  <style>
+    /* Estilo do input */
+    #input {
+      border: none;
+      border-bottom: 1px solid red;
+      margin-bottom: 10px;
+      background-color: rgba(255, 0, 0, 0.1);
+    }
+
+    /* Estilo da div */
+    #div {
+      width: 90%;
+      height: 40%;
+      margin: 0 auto;
+      border: 1px solid black;
+      padding: 10px;
+      overflow: auto;
+    }
+
+    /* Estilo dos links */
+    a {
+      display: inline-block;
+      margin: 10px;
+      padding: 5px;
+      background-color: lightblue;
+      color: white;
+      text-decoration: none;
+    }
+
+    .def {
+   padding-left:10px;
+   padding-right:10px;
+    height: 50px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(white, #fff);
+    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    text-decoration: none;
+    text-align: center;
+    line-height: 50px;
+    display: block;
+    margin: 10px;
+  }
+
+  /* Estilo do botão Limpar */
+  #limpar {
+    float: right;
+  }
+  </style>
+</head>
+<body>
+  <!-- Input para subtrair -->
+  <input id="input" type="number" step="0.1" placeholder="Subtrair">
+  <button id="subtrair">Subtrair</button>
+  <!-- Botão para limpar -->
+  <button id="limpar">Limpar</button>
+  <!-- Div -->
+  <div id="div"></div>
+  <!-- Links para adicionar itens -->
+  <div id="links">
+    <!-- Os links serão adicionados aqui pelo JavaScript -->
+  </div>
+  <button id="extrair">Extrair</button>
+  <!-- Botão para voltar -->
+  <a href="index.html" class="def">voltar</a>
+  <script>
+    // Variável para armazenar a soma dos valores
+    var soma = parseFloat(localStorage.getItem('soma')) || 0;
+    // Lista para armazenar os itens adicionados à div
+    var itens = JSON.parse(localStorage.getItem('itens')) || [];
+
+    // Carrega os itens do localStorage ao carregar a página
+    window.onload = function() {
+      var links = document.getElementById('links');
+      var linhas = JSON.parse(localStorage.getItem('linhas')) || [];
+      var div = document.getElementById('div');
+      // Carrega o conteúdo salvo da div
+      div.innerHTML = localStorage.getItem('divContent') || '';
+      var somaP = document.getElementById('soma');
+      if (!somaP) {
+        somaP = document.createElement('p');
+        somaP.id = 'soma';
+        somaP.style.textAlign = 'right';
+        div.appendChild(somaP);
+      }
+      somaP.textContent = 'Soma: ' + soma.toFixed(2);
+      linhas.forEach(function(linha, i) {
+        var link = document.createElement('a');
+        link.href = '#';
+        link.textContent = linha.item;
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          // Adiciona o texto à div
+          var p = document.createElement('p');
+          p.textContent = linha.item;
+          div.insertBefore(p, somaP);
+          // Adiciona o valor à soma e exibe no canto superior direito da div
+          soma += parseFloat(linha.preco);
+          somaP.textContent = 'Soma: ' + soma.toFixed(2);
+          // Adiciona o item à lista
+          itens.push({texto: linha.item, valor: parseFloat(linha.preco)});
+          // Salva o conteúdo atual da div, a soma e a lista de itens
+          localStorage.setItem('divContent', div.innerHTML);
+          localStorage.setItem('soma', soma);
+          localStorage.setItem('itens', JSON.stringify(itens));
+        });
+        links.appendChild(link);
+      });
+    };
+
+    // Subtrai o valor do input da soma quando o botão é clicado
+    document.getElementById('subtrair').addEventListener('click', function() {
+      var valor = parseFloat(document.getElementById('input').value);
+      if (!isNaN(valor)) {
+        soma -= valor;
+        var somaP = document.getElementById('soma');
+        somaP.textContent = 'Soma: ' + soma.toFixed(2);
+        // Adiciona o valor subtraído à div
+        var p = document.createElement('p');
+        p.style.color = 'red';
+        p.textContent = '-' + valor.toFixed(2);
+        div.insertBefore(p, somaP);
+        // Adiciona o item à lista
+        itens.push({texto: '-' + valor.toFixed(2), valor: -valor});
+        // Salva o conteúdo atual da div, a soma e a lista de itens
+        localStorage.setItem('divContent', div.innerHTML);
+        localStorage.setItem('soma', soma);
+        localStorage.setItem('itens', JSON.stringify(itens));
+      }
+    });
+
+    // Remove o último item da div e atualiza a soma quando o botão é clicado
+    document.getElementById('limpar').addEventListener('click', function() {
+      var div = document.getElementById('div');
+      var somaP = document.getElementById('soma');
+      // Verifica se há itens para remover
+      if (div.children.length > 1 && itens.length > 0) {
+        // Remove o último item da div
+        var ultimoItem = div.children[div.children.length - 2];
+        div.removeChild(ultimoItem);
+        // Remove o último item da lista e atualiza a soma
+        var ultimoItemLista = itens.pop();
+        soma -= ultimoItemLista.valor;
+        somaP.textContent = 'Soma: ' + soma.toFixed(2);
+        // Salva o conteúdo atual da div, a soma e a lista de itens
+        localStorage.setItem('divContent', div.innerHTML);
+        localStorage.setItem('soma', soma);
+        localStorage.setItem('itens', JSON.stringify(itens));
+      }
+    });
+
+   // Cria uma nova lista para armazenar os itens extraídos
+  var itensExtraidos = [];
+
+// Adiciona o evento de clique ao botão Extrair
+document.getElementById('extrair').addEventListener('click', function() {
+  // Salva a lista de itens extraídos
+  localStorage.setItem('itensExtraidos', JSON.stringify(itens));
+  // Salva o cálculo final
+  localStorage.setItem('somaFinal', soma);
+  // Limpa a div, mas mantém o texto do cálculo
+  var div = document.getElementById('div');
+  var somaP = document.getElementById('soma');
+  while (div.firstChild && div.firstChild !== somaP) {
+    div.removeChild(div.firstChild);
+  }
+  // Zera a soma e atualiza o texto do cálculo
+  soma = 0;
+  somaP.textContent = 'Soma: ' + soma.toFixed(2);
+  // Limpa a lista de itens
+  itens = [];
+  // Atualiza o localStorage
+  localStorage.setItem('divContent', div.innerHTML);
+  localStorage.setItem('soma', soma);
+  localStorage.setItem('itens', JSON.stringify(itens));
+}); 
+  </script>
+</body>
+</html>

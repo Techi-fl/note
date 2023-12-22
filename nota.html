@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Note</title>
-    <link rel="shortcut icon" href="icone.png" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Note</title>
+  <link rel="shortcut icon" href="icone.png" type="image/x-icon">
   <style>
     /* Estilo da tabela */
     table {
@@ -68,8 +68,7 @@
     <tbody id="corpo">
       <!-- Linha inicial -->
       <tr>
-        <td><input type="text" value="Exemplo" required placeholder="Digite o nome do item"></td>
-        <td><input type="number" value="10,00" required min="0.01" step="0.01" placeholder="Digite o preço do item"></td>
+       
       </tr>
     </tbody>
   </table>
@@ -84,12 +83,20 @@
     window.onload = function() {
       var tabela = document.getElementById('corpo');
       var linhas = JSON.parse(localStorage.getItem('linhas')) || [];
-      linhas.forEach(function(linha) {
+      linhas.forEach(function(linha, i) {
         var novaLinha = tabela.insertRow();
         var celula1 = novaLinha.insertCell(0);
         var celula2 = novaLinha.insertCell(1);
         celula1.innerHTML = '<input type="text" value="' + linha.item + '" required placeholder="Digite o nome do item">';
         celula2.innerHTML = '<input type="number" value="' + linha.preco + '" required min="0.01" step="0.01" placeholder="Digite o preço do item">';
+        celula1.querySelector('input').addEventListener('input', function(e) {
+          linhas[i].item = e.target.value;
+          localStorage.setItem('linhas', JSON.stringify(linhas));
+        });
+        celula2.querySelector('input').addEventListener('input', function(e) {
+          linhas[i].preco = e.target.value;
+          localStorage.setItem('linhas', JSON.stringify(linhas));
+        });
       });
     };
 
@@ -104,15 +111,22 @@
       var linhas = JSON.parse(localStorage.getItem('linhas')) || [];
       linhas.push({item: 'Exemplo', preco: '10,00'});
       localStorage.setItem('linhas', JSON.stringify(linhas));
+      celula1.querySelector('input').addEventListener('input', function(e) {
+        linhas[linhas.length - 1].item = e.target.value;
+        localStorage.setItem('linhas', JSON.stringify(linhas));
+      });
+      celula2.querySelector('input').addEventListener('input', function(e) {
+        linhas[linhas.length - 1].preco = e.target.value;
+        localStorage.setItem('linhas', JSON.stringify(linhas));
+      });
     });
 
     document.getElementById('remover').addEventListener('click', function(e) {
       e.preventDefault();
       var tabela = document.getElementById('corpo');
-      var linhas = tabela.rows.length;
-      if (linhas > 1) {
-        tabela.deleteRow(linhas - 1);
-        var linhas = JSON.parse(localStorage.getItem('linhas')) || [];
+      var linhas = JSON.parse(localStorage.getItem('linhas')) || [];
+      if (linhas.length > 0) {
+        tabela.deleteRow(linhas.length - 1);
         linhas.pop();
         localStorage.setItem('linhas', JSON.stringify(linhas));
       }

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Note</title>
+    <link rel="shortcut icon" href="icone.png" type="image/x-icon">
+    <style>
+        .def {
+            padding-left:10px;
+            padding-right:10px;
+            height: 50px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(white, #fff);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            text-decoration: none;
+            text-align: center;
+            line-height: 50px;
+            display: block;
+            margin: 10px;
+            position: fixed;
+            bottom: 0;
+        }
+
+        #input, #salvar {
+            display: none;
+            margin: 0 auto;
+        }
+
+        /* Estilo das divs */
+        div {
+            margin-bottom: 10px;
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <!-- Botão para salvar extraído -->
+    <button id="salvarExtraido">Salvar Extraído</button>
+    <!-- Input para nome da div -->
+    <input id="input" type="text" placeholder="Nome do extrato">
+    <!-- Botão para salvar -->
+    <button id="salvar">Salvar</button>
+    <!-- Link para voltar -->
+    <a href="index.html" class="def">Voltar</a>
+
+    <script>
+        // Cria uma nova lista para armazenar os itens extraídos
+        var itensExtraidos = [];
+
+        // Adiciona o evento de clique ao botão Salvar Extraído
+        document.getElementById('salvarExtraido').addEventListener('click', function() {
+            // Exibe o input e o botão Salvar
+            document.getElementById('input').style.display = 'block';
+            document.getElementById('salvar').style.display = 'block';
+        });
+
+        // Adiciona o evento de clique ao botão Salvar
+        document.getElementById('salvar').addEventListener('click', function() {
+            // Cria uma nova div com o nome do input
+            var div = document.createElement('div');
+            div.textContent = document.getElementById('input').value;
+            document.body.appendChild(div);
+            // Pega os itens da lista
+            var itens = JSON.parse(localStorage.getItem('itensExtraidos')) || [];
+            // Mostra o cálculo em negrito se estiver definido
+            var somaFinal = localStorage.getItem('somaFinal');
+            if (somaFinal) {
+                var p = document.createElement('p');
+                p.style.fontWeight = 'bold';
+                p.textContent = 'Cálculo: ' + somaFinal;
+                div.appendChild(p);
+            }
+            // Adiciona os itens à div
+if (itens) {  // Verifica se 'itens' existe antes de chamar 'forEach'
+    itens.forEach(function(item) {
+        var p = document.createElement('p');
+        p.textContent = item.texto;
+        div.appendChild(p);
+    });
+}
+
+            // Esconde o input e o botão Salvar
+            document.getElementById('input').style.display = 'none';
+            document.getElementById('salvar').style.display = 'none';
+            // Limpa o input
+            document.getElementById('input').value = '';
+            // Salva a div
+            var divs = JSON.parse(localStorage.getItem('divs')) || [];
+            divs.push({nome: div.textContent, somaFinal: somaFinal, itens: itens});
+            localStorage.setItem('divs', JSON.stringify(divs));
+        });
+
+        // Carrega as divs salvas ao carregar a página
+        window.onload = function() {
+            var divs = JSON.parse(localStorage.getItem('divs')) || [];
+            divs.forEach(function(divInfo) {
+                var div = document.createElement('div');
+                div.textContent = divInfo.nome;
+                document.body.appendChild(div);
+                if (divInfo.somaFinal) {
+                    var p = document.createElement('p');
+                    p.style.fontWeight = 'bold';
+                    p.textContent = 'Cálculo: ' + divInfo.somaFinal;
+                    div.appendChild(p);
+                }
+                if (divInfo.itens) {  // Verifica se 'itens' existe antes de chamar 'forEach'
+                    divInfo.itens.forEach(function(item) {
+                        var p = document.createElement('p');
+                        p.textContent = item.texto;
+                        div.appendChild(p);
+                    });
+                }
+            });
+        };
+
+        
+    </script>
+</body>
+</html>
