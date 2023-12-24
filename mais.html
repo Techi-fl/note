@@ -17,7 +17,7 @@
     /* Estilo da div */
     #div {
       width: 90%;
-      height: 40%;
+      height: 40vw;
       margin: 0 auto;
       border: 1px solid black;
       padding: 10px;
@@ -57,6 +57,33 @@
   #limpar {
     float: right;
   }
+
+  .d {
+  background-color: #008CBA; /* Cor de fundo do botão */
+  border: none; /* Sem borda */
+  color: white; /* Cor do texto */
+  padding: 10px 24px; /* Espaçamento interno */
+  text-align: center; /* Alinhamento do texto */
+  text-decoration: none; /* Sem sublinhado */
+  display: inline-block;
+  font-size: 12px; /* Tamanho da fonte */
+  margin: 4px 2px;
+  transition-duration: 0.4s; /* Duração da transição */
+  cursor: pointer; /* Muda o cursor para um ponteiro quando você passa o mouse sobre o botão */
+  border-radius: 8px; /* Bordas arredondadas */
+  box-shadow: 0 3px #999; /* Sombra abaixo do botão */
+}
+
+.d:hover {
+  background-color: #3e8e41; /* Cor de fundo quando o mouse passa sobre o botão */
+}
+
+.d:active {
+  background-color: #3e8e41; /* Cor de fundo quando o botão é clicado */
+  box-shadow: 0 5px #666; /* Sombra abaixo do botão quando é clicado */
+  transform: translateY(4px); /* Move o botão para baixo quando é clicado */
+}
+ 
   </style>
 </head>
 <body>
@@ -64,14 +91,14 @@
   <input id="input" type="number" step="0.1" placeholder="Subtrair">
   <button id="subtrair">Subtrair</button>
   <!-- Botão para limpar -->
-  <button id="limpar">Limpar</button>
+  <button id="limpar" class="d">Limpar</button>
   <!-- Div -->
   <div id="div"></div>
   <!-- Links para adicionar itens -->
   <div id="links">
     <!-- Os links serão adicionados aqui pelo JavaScript -->
   </div>
-  <button id="extrair">Extrair</button>
+  <button id="extrair" class="d">Extrair</button>
   <!-- Botão para voltar -->
   <a href="index.html" class="def">voltar</a>
   <script>
@@ -125,7 +152,11 @@
       if (!isNaN(valor)) {
         soma -= valor;
         var somaP = document.getElementById('soma');
-        somaP.textContent = 'Soma: ' + soma.toFixed(2);
+         somaP.textContent = 'Soma: ' + soma.toFixed(2);
+         somaP.style.position = 'fixed';
+        somaP.style.top = '0';
+        somaP.style.width = '100%';
+
         // Adiciona o valor subtraído à div
         var p = document.createElement('p');
         p.style.color = 'red';

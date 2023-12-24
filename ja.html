@@ -28,6 +28,17 @@
             bottom: 0;
         }
 
+        .de{
+            position: fixed;
+            bottom: 0;
+            left:150px;
+            margin: 20px;
+            width: 50%;
+            border:double #008CBA 4px;
+
+
+        }
+
         #input, #salvar, #remover, #inputRemove, #confirmar {
             display: none;
             margin: 0 auto;
@@ -47,24 +58,56 @@
         #input.invalid, #inputRemove.invalid {
             color: red;
         }
+
+        .d {
+  background-color: #008CBA; /* Cor de fundo do botão */
+  border: none; /* Sem borda */
+  color: white; /* Cor do texto */
+  padding: 10px 24px; /* Espaçamento interno */
+  text-align: center; /* Alinhamento do texto */
+  text-decoration: none; /* Sem sublinhado */
+  display: inline-block;
+  font-size: 12px; /* Tamanho da fonte */
+  margin: 4px 2px;
+  transition-duration: 0.4s; /* Duração da transição */
+  cursor: pointer; /* Muda o cursor para um ponteiro quando você passa o mouse sobre o botão */
+  border-radius: 8px; /* Bordas arredondadas */
+  box-shadow: 0 3px #999; /* Sombra abaixo do botão */
+}
+
+.d:hover {
+  background-color: #3e8e41; /* Cor de fundo quando o mouse passa sobre o botão */
+}
+
+.d:active {
+  background-color: #3e8e41; /* Cor de fundo quando o botão é clicado */
+  box-shadow: 0 5px #666; /* Sombra abaixo do botão quando é clicado */
+  transform: translateY(4px); /* Move o botão para baixo quando é clicado */
+}
+
+.t{
+    border: none;
+}
+
+
+
     </style>
 </head>
 <body>
     <!-- Botão para salvar extraído -->
-    <button id="salvarExtraido">Salvar Extraído</button>
+    <button id="salvarExtraido" class="d">Salvar Extraído</button>
     <!-- Botão para remover div -->
-    <button id="remover">Remover</button>
+    <button id="remover" class="d">Remover</button>
     <!-- Input para nome da div -->
     <input id="input" type="text" placeholder="Nome do extrato">
     <!-- Input para remover div -->
     <input id="inputRemove" type="text" placeholder="Nome do extrato para remover">
     <!-- Botão para salvar -->
-    <button id="salvar">Salvar</button>
+    <button id="salvar" class="t">Salvar</button>
     <!-- Botão para confirmar remoção -->
     <button id="confirmar">Confirmar</button>
     <!-- Link para voltar -->
     <a href="index.html" class="def">Voltar</a>
-
     <script>
  // Cria uma nova lista para armazenar os itens extraídos
 var itensExtraidos = [];
@@ -88,6 +131,8 @@ document.getElementById('salvarExtraido').addEventListener('click', function() {
 
 // Adiciona o evento de clique ao botão Remover
 document.getElementById('remover').addEventListener('click', function() {
+
+
     // Pega a lista de divs
     var divs = JSON.parse(localStorage.getItem('divs')) || [];
     // Remove o último item da lista de divs
@@ -106,13 +151,11 @@ document.getElementById('remover').addEventListener('click', function() {
 // Cria uma nova lista para armazenar os itens extraídos
 var itensExtraidos = [];
 
-// Cria uma nova lista para armazenar as divs
-var divs = [];
-
 // Adiciona o evento de input ao campo de entrada
 document.getElementById('input').addEventListener('input', function() {
     // Pega o nome da div do input
-    var nomeDiv = document.getElementById('input').value;
+     var nomeDiv = document.getElementById('input').value;
+     fag.push(nomeDiv)
     // Verifica se o nome da div já existe na lista de divs
     var divs = JSON.parse(localStorage.getItem('divs')) || [];
     var index = divs.findIndex(function(divInfo) {
@@ -126,6 +169,7 @@ document.getElementById('input').addEventListener('input', function() {
         // Se o nome da div não existir, torna o input normal e habilita o botão Salvar
         document.getElementById('input').classList.remove('invalid');
         document.getElementById('salvar').disabled = false;
+
     }
 });
 
@@ -133,6 +177,7 @@ document.getElementById('input').addEventListener('input', function() {
 document.getElementById('salvar').addEventListener('click', function() {
     // Pega o nome da div do input
     var nomeDiv = document.getElementById('input').value;
+
     // Verifica se o nome da div já existe na lista de divs
     var divs = JSON.parse(localStorage.getItem('divs')) || [];
     var index = divs.findIndex(function(divInfo) {

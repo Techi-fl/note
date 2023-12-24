@@ -79,58 +79,84 @@
     <a href="index.html" class="def">voltar</a>
   </div>
   <script>
-    // Carrega as linhas do localStorage ao carregar a página
-    window.onload = function() {
-      var tabela = document.getElementById('corpo');
-      var linhas = JSON.parse(localStorage.getItem('linhas')) || [];
-      linhas.forEach(function(linha, i) {
-        var novaLinha = tabela.insertRow();
-        var celula1 = novaLinha.insertCell(0);
-        var celula2 = novaLinha.insertCell(1);
-        celula1.innerHTML = '<input type="text" value="' + linha.item + '" required placeholder="Digite o nome do item">';
-        celula2.innerHTML = '<input type="number" value="' + linha.preco + '" required min="0.01" step="0.01" placeholder="Digite o preço do item">';
-        celula1.querySelector('input').addEventListener('input', function(e) {
-          linhas[i].item = e.target.value;
-          localStorage.setItem('linhas', JSON.stringify(linhas));
-        });
-        celula2.querySelector('input').addEventListener('input', function(e) {
-          linhas[i].preco = e.target.value;
-          localStorage.setItem('linhas', JSON.stringify(linhas));
-        });
-      });
-    };
-
-    document.getElementById('adicionar').addEventListener('click', function(e) {
-      e.preventDefault();
-      var tabela = document.getElementById('corpo');
-      var novaLinha = tabela.insertRow();
-      var celula1 = novaLinha.insertCell(0);
-      var celula2 = novaLinha.insertCell(1);
-      celula1.innerHTML = '<input type="text" value="Exemplo" required placeholder="Digite o nome do item">';
-      celula2.innerHTML = '<input type="number" value="10,00" required min="0.01" step="0.01" placeholder="Digite o preço do item">';
-      var linhas = JSON.parse(localStorage.getItem('linhas')) || [];
-      linhas.push({item: 'Exemplo', preco: '10,00'});
+  // Carrega as linhas do localStorage ao carregar a página
+window.onload = function() {
+  var tabela = document.getElementById('corpo');
+  var linhas = JSON.parse(localStorage.getItem('linhas')) || [];
+  linhas.forEach(function(linha, i) {
+    var novaLinha = tabela.insertRow();
+    var celula1 = novaLinha.insertCell(0);
+    var celula2 = novaLinha.insertCell(1);
+    celula1.innerHTML = '<input type="text" value="' + linha.item + '" required placeholder="Digite o nome do item">';
+    celula2.innerHTML = '<input type="number" value="' + linha.preco + '" required min="0.01" step="0.01" placeholder="Digite o preço do item">';
+    celula1.querySelector('input').addEventListener('input', function(e) {
+      linhas[i].item = e.target.value;
       localStorage.setItem('linhas', JSON.stringify(linhas));
-      celula1.querySelector('input').addEventListener('input', function(e) {
-        linhas[linhas.length - 1].item = e.target.value;
-        localStorage.setItem('linhas', JSON.stringify(linhas));
-      });
-      celula2.querySelector('input').addEventListener('input', function(e) {
-        linhas[linhas.length - 1].preco = e.target.value;
-        localStorage.setItem('linhas', JSON.stringify(linhas));
-      });
     });
+    celula2.querySelector('input').addEventListener('input', function(e) {
+      linhas[i].preco = e.target.value;
+      localStorage.setItem('linhas', JSON.stringify(linhas));
+    });
+  });
+};
 
-    document.getElementById('remover').addEventListener('click', function(e) {
-      e.preventDefault();
-      var tabela = document.getElementById('corpo');
-      var linhas = JSON.parse(localStorage.getItem('linhas')) || [];
-      if (linhas.length > 0) {
-        tabela.deleteRow(linhas.length - 1);
-        linhas.pop();
-        localStorage.setItem('linhas', JSON.stringify(linhas));
-      }
-    });
+document.getElementById('adicionar').addEventListener('click', function(e) {
+  e.preventDefault();
+  var tabela = document.getElementById('corpo');
+  var novaLinha = tabela.insertRow();
+  var celula1 = novaLinha.insertCell(0);
+  var celula2 = novaLinha.insertCell(1);
+  celula1.innerHTML = '<input type="text" value="Exemplo" required placeholder="Digite o nome do item">';
+  celula2.innerHTML = '<input type="number" value="10,00" required min="0.01" step="0.01" placeholder="Digite o preço do item">';
+  var linhas = JSON.parse(localStorage.getItem('linhas')) || [];
+  linhas.push({item: 'Exemplo', preco: '10,00'});
+  localStorage.setItem('linhas', JSON.stringify(linhas));
+  celula1.querySelector('input').addEventListener('input', function(e) {
+    linhas[linhas.length - 1].item = e.target.value;
+    localStorage.setItem('linhas', JSON.stringify(linhas));
+  });
+  celula2.querySelector('input').addEventListener('input', function(e) {
+    linhas[linhas.length - 1].preco = e.target.value;
+    localStorage.setItem('linhas', JSON.stringify(linhas));
+  });
+});
+
+document.getElementById('remover').addEventListener('click', function(e) {
+  e.preventDefault();
+  var linhas = document.getElementById('corpo').rows;
+  for (var i = 1; i < linhas.length; i++) {
+    if (linhas[i].lastChild.textContent == ' x') {
+      linhas[i].removeChild(linhas[i].lastChild);
+    } else {
+      var x = document.createElement('span');
+      x.textContent = ' x';
+      x.style.color = 'red';
+      x.style.cursor = 'pointer';
+      x.addEventListener('click', function(e) {
+        var index = Array.prototype.indexOf.call(linhas, e.target.parentNode);
+        e.target.parentNode.remove();
+        atualizarLocalStorage(index);
+      });
+      linhas[i].appendChild(x);
+    }
+  }
+});
+
+function atualizarLocalStorage(index) {
+  var linhas = JSON.parse(localStorage.getItem('linhas')) || [];
+  linhas.splice(index - 1, 1);
+  localStorage.setItem('linhas', JSON.stringify(linhas));
+}
+
+function removerX() {
+  var linhas = document.getElementById('corpo').rows;
+  for (var i = 1; i < linhas.length; i++) {
+    if (linhas[i].lastChild.textContent == ' x') {
+      linhas[i].removeChild(linhas[i].lastChild);
+    }
+  }
+}
+
   </script>
 </body>
 </html>
