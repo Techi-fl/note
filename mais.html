@@ -121,7 +121,7 @@
         somaP.style.textAlign = 'right';
         div.appendChild(somaP);
       }
-      somaP.textContent = 'Soma: ' + soma.toFixed(2);
+      somaP.textContent = 'Soma: ' + soma.toRelative(2);
       linhas.forEach(function(linha, i) {
         var link = document.createElement('a');
         link.href = '#';
